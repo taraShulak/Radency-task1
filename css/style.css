@@ -146,7 +146,7 @@ button i{
   grid-template-columns: 40px 200px 1fr 1fr;
   justify-items: center;
   align-items: center;
-  background-color: rgb(70, 17, 149);
+  background-color: rgb(93, 178, 13);
 }
 
 .category__task-item,
