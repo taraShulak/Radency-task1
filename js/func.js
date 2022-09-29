@@ -58,7 +58,7 @@ function firstCreateNote (array, placeInsert, situation) {
           <p class="time">${item.time}</p>
           <p class="note__content">${item.content}</p> 
           <p class="note__category">${item.category}</p>           
-          <p class="others"> others</p> 
+          <p class="others"></p> 
           <button class="delete-note-button"><i class="fa-solid fa-trash"></i></button>
           <button class="edit-note-button"><i class="fa-solid fa-pen"></i></button>
           <button class="archive-note-button"><i class="fa-sharp fa-solid fa-folder"></i></button>   
