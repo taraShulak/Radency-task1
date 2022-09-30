@@ -26,47 +26,26 @@ createBtn.addEventListener('click', createForm);
 noteList.addEventListener('click', deleteNote);
 noteList.addEventListener('click', archiveNote);
 noteList.addEventListener('click', correctNote);
-categoryTask.addEventListener('click', taskArchive);
-categoryIdea.addEventListener('click', ideaArchive);
-categoryRandom.addEventListener('click', randomArchive)
+//categoryTask.addEventListener('click', taskArchive);
+//categoryIdea.addEventListener('click', ideaArchive);
+//categoryRandom.addEventListener('click', randomArchive)
 
 
 let categoryForDelete; 
 let chouseCategoryVisio = false;
 let inputCategory;
-
+/*
 function deleteArchive (event, array, place) {
   if (event.target.className === "fa-solid fa-trash") {    
-    const parent = event.target.closest('.noteAdded__item');
-    console.log(parent);
+    const parent = event.target.closest('.noteAdded__item');   
     const currentIndex = parent.dataset.index; 
     array.splice(currentIndex, 1);
     categoryList.querySelector(place).innerHTML = array.length;
     parent.remove();   
   }
 }
-
-function taskArchive(event){ 
-  if(event.target.className === "task__archive" && taskVisio == false){
-    firstCreateNote(taskArray, categoryTask, 'beforeend');
-    taskVisio = true;
-    console.log(event.target);
-  } else  if(event.target.className === "task__archive" && taskVisio == true){
-              taskVisio = false;
-              const list = categoryTask.querySelectorAll('.noteAdded__item');
-              for (const li of list) {
-                li.remove();
-              }
-              //console.log(event.target);
-          }
-  if (event.target.className == "fa-sharp fa-solid fa-folder") {   
-    deArchiveElem(event, taskArray, '.task__archive');    
-  }  
-  if (event.target.className === "fa-solid fa-trash") {    
-    deleteArchive (event, taskArray, '.task__archive');  
-  }
-  correctLiNumber(categoryTask, taskArray);
-}
+*/
+/*
 
 function ideaArchive(event){ 
   if(event.target.className === "idea__archive" && ideaVisio == false){
@@ -107,22 +86,7 @@ function randomArchive(event){
   }
   correctLiNumber(categoryRandom, randomArray);
 }
-
-function deArchiveElem (event, array, place) {
-    const parent = event.target.closest('.noteAdded__item');
-    const currentIndex = parent.dataset.index; 
-    noteArray.push(array[currentIndex]);
-    noteArray[noteArray.length - 1].index = noteArray.length - 1;
-    const deArchiveItem = array.splice(currentIndex, 1);
-    deArchiveItem[0].index = noteArray.length - 1;
-    firstCreateNote(deArchiveItem ,noteList, 'beforeend');
-    console.log(deArchiveItem);
-    categoryList.querySelector(place).innerHTML = array.length;
-    parent.remove();         
-    correctCategoryNumber();
-}
-
-
+*/
 function correctNote(event){
   if (event.target.className === "fa-solid fa-pen" && correctVisio == false){
     correctVisio = true;
@@ -223,10 +187,76 @@ function deleteNote(event){
   }
 }
 
+class Category{
+  constructor(elem, array, divArchive, divActiv,  categoryName, categoryInd) {
+    this.divActiv = divActiv;
+    this.categoryInd = categoryInd;
+    this.categoryName = categoryName;
+    this.array = array;
+    this.divArchive = divArchive;
+    this._elem = elem;
+    elem.onclick = this.formAction.bind(this);
+  }
+
+  elemArchive(event){ 
+    if(taskVisio == false){
+      firstCreateNote(this.array, this.categoryName, 'beforeend');
+      taskVisio = true;
+      //console.log(event.target);
+    } else  if(taskVisio == true){
+                taskVisio = false;
+                const list = this.categoryName.querySelectorAll('.noteAdded__item');
+                for (const li of list) {
+                  li.remove();
+                }              
+            }   
+    correctLiNumber(this.categoryName, this.array); 
+  }
+
+  deArchiveElem (event) {
+    const parent = event.target.closest('.noteAdded__item');
+    const currentIndex = parent.dataset.index; 
+    noteArray.push(this.array[currentIndex]);
+    noteArray[noteArray.length - 1].index = noteArray.length - 1;
+    const deArchiveItem = this.array.splice(currentIndex, 1);
+    deArchiveItem[0].index = noteArray.length - 1;
+    firstCreateNote(deArchiveItem ,noteList, 'beforeend');
+    categoryList.querySelector(this.divArchive).innerHTML = this.array.length;
+    //const activion = categoryList.querySelector(this.divActiv).value;
+    //categoryList.querySelector(this.divActiv).innerHTML = activion - 1;
+    parent.remove();         
+    correctCategoryNumber();
+    correctLiNumber(this.categoryName, this.array);
+}
+
+  deleteArchive(event) {    
+      const parent = event.target.closest('.noteAdded__item');   
+      const currentIndex = parent.dataset.index; 
+      this.array.splice(currentIndex, 1);
+      categoryList.querySelector(this.divArchive).innerHTML = this.array.length;
+      parent.remove();   
+      correctLiNumber(this.categoryName, this.array);
+      correctCategoryNumber();
+  }
+
+  formAction(event){
+    let actionItem = event.target.classList.contains('action-item') 
+      ? event.target 
+      : event.target.closest('.action-item');
+    let action =  actionItem ? actionItem.dataset.action : null;
+    if (action) {
+      this[action](event);
+    }
+  }
+}
+new Category(categoryTask, taskArray, '.task__archive', '.task__active', categoryTask);
+new Category (categoryIdea, ideaArray, '.idea__archive', '.idea__active', categoryIdea)
+new Category(categoryRandom, randomArray, '.random__archive', '.random__active', categoryRandom)
+
 class Form {
   constructor(elem) {
     this._elem = elem;
-    elem.onclick = this.formAction.bind(this); // (*)
+    elem.onclick = this.formAction.bind(this); 
   }
 
   deleteForm(event){

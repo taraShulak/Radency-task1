@@ -59,9 +59,9 @@ function firstCreateNote (array, placeInsert, situation) {
           <p class="note__content">${item.content}</p> 
           <p class="note__category">${item.category}</p>           
           <p class="others"> others</p> 
-          <button class="delete-note-button"><i class="fa-solid fa-trash"></i></button>
+          <button class="delete-note-button action-item" data-action="deleteArchive"><i class="fa-solid fa-trash"></i></button>
           <button class="edit-note-button"><i class="fa-solid fa-pen"></i></button>
-          <button class="archive-note-button"><i class="fa-sharp fa-solid fa-folder"></i></button>   
+          <button class="archive-note-button action-item" data-action="deArchiveElem"><i class="fa-sharp fa-solid fa-folder"></i></button>   
       </li>
     `
     placeInsert.insertAdjacentHTML(situation, textNote);
