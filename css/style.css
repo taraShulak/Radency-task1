@@ -67,7 +67,7 @@ button i{
   width: 200px;
   height: 40px;
   border-radius: 5px;
-  background-color: rgb(185, 96, 12);
+  background-color: rgb(139, 174, 186);
   text-align: center;
   cursor: pointer;
 }
@@ -146,13 +146,15 @@ button i{
   grid-template-columns: 40px 200px 1fr 1fr;
   justify-items: center;
   align-items: center;
-  background-color: rgb(70, 17, 149);
+  background-color: gray;
+  color: #fff;
 }
 
 .category__task-item,
 .category__idea-item,
 .category__random-item{
   background-color: rgb(219, 210, 210);
+  color: rgb(73, 72, 72);
 }
 .note__content,
 .note__category, 
