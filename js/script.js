@@ -2,139 +2,48 @@ import {firstNote, firstCreateNote} from "./func.js";
 
 const createBtn = document.querySelector('.create-button');
 const newForm = document.querySelector('.newForm');
-const correctForm = document.querySelector('.correct__item');
 const noteList = document.querySelector('.noteList');
 const categoryList = document.querySelector('.category__list');
 const categoryTask = document.querySelector('.category__task');
-const categoryTaskItem = document.querySelector('.category__task-item');
 const categoryIdea = document.querySelector('.category__idea');
-const categoryIdeaItem = document.querySelector('.category__idea-item');
 const categoryRandom = document.querySelector('.category__random');
-const categoryRandomItem = document.querySelector('.category__random-item');
 const noteArray = [];
 const taskArray = []; let taskVisio = false;
-const ideaArray = []; let ideaVisio = false;
-const randomArray = []; let randomVisio = false;
+const ideaArray = []; 
+const randomArray = [];
 let formVisio = false;
-let correctVisio = false;
+let globalNoteIndex;
+let globalNoteParent;
+
 firstNote.map(item => noteArray.push(item));
 
 firstCreateNote(noteArray, noteList, "beforeend");
 correctCategoryNumber();
 
 createBtn.addEventListener('click', createForm);
-noteList.addEventListener('click', deleteNote);
-noteList.addEventListener('click', archiveNote);
-noteList.addEventListener('click', correctNote);
-//categoryTask.addEventListener('click', taskArchive);
-//categoryIdea.addEventListener('click', ideaArchive);
-//categoryRandom.addEventListener('click', randomArchive)
-
 
 let categoryForDelete; 
 let chouseCategoryVisio = false;
 let inputCategory;
-/*
-function deleteArchive (event, array, place) {
-  if (event.target.className === "fa-solid fa-trash") {    
-    const parent = event.target.closest('.noteAdded__item');   
-    const currentIndex = parent.dataset.index; 
-    array.splice(currentIndex, 1);
-    categoryList.querySelector(place).innerHTML = array.length;
-    parent.remove();   
-  }
-}
-*/
-/*
 
-function ideaArchive(event){ 
-  if(event.target.className === "idea__archive" && ideaVisio == false){
-    firstCreateNote(ideaArray, categoryIdea, 'beforeend');
-    ideaVisio = true;
-  } else  if(event.target.className === "idea__archive" && ideaVisio == true){
-              ideaVisio = false;
-              const list = categoryIdea.querySelectorAll('.noteAdded__item');
-              for (const li of list) {
-                li.remove();
-              }
-          }
-  if (event.target.className == "fa-sharp fa-solid fa-folder") {   
-    deArchiveElem(event, ideaArray, '.idea__archive');    
-  }  
-  if (event.target.className === "fa-solid fa-trash") {    
-    deleteArchive (event, ideaArray, '.idea__archive');  
-  }
-  correctLiNumber(categoryIdea, ideaArray);
-}
-
-function randomArchive(event){ 
-  if(event.target.className === "random__archive" && randomVisio == false){
-    firstCreateNote(randomArray, categoryRandom, 'beforeend');
-    randomVisio = true;
-  } else  if(event.target.className === "random__archive" && randomVisio == true){
-              randomVisio = false;
-              const list = categoryRandom.querySelectorAll('.noteAdded__item');
-              for (const li of list) {
-                li.remove();
-              }
-          }
-  if (event.target.className == "fa-sharp fa-solid fa-folder") {   
-    deArchiveElem(event, randomArray, '.random__archive');    
-  }  
-  if (event.target.className === "fa-solid fa-trash") {    
-    deleteArchive (event, randomArray, '.random__archive');  
-  }
-  correctLiNumber(categoryRandom, randomArray);
-}
-*/
-function correctNote(event){
-  if (event.target.className === "fa-solid fa-pen" && correctVisio == false){
-    correctVisio = true;
-    const parent = event.target.closest('.noteAdded__item');    
-    const currentIndex = parent.dataset.index; 
-    const correctText = `
-        <div class="correctParent">
-          <textarea class="correct__category" cols="10" rows="2" >${noteArray[currentIndex].category}</textarea>        
-          <textarea class="correct__content" name="" id="" cols="50" rows="5">${noteArray[currentIndex].content}</textarea>
-          <div class="correct-button"><i class="fa-solid fa-file-edit"></i></div>
-        </div>
-          `
-    correctForm.insertAdjacentHTML('afterbegin', correctText);
-    const correctItem = correctForm.querySelector('.correctParent')
-    correctItem.addEventListener('click', (event) =>  {
-      if (event.target.className === "fa-solid fa-file-edit"){                
-        const correctContent = correctForm.querySelector('.correct__content');
-        const correctCategory = correctForm.querySelector('.correct__category');       
-        parent.querySelector('.note__category').innerHTML = correctCategory.value;
-        noteArray[currentIndex].content = correctContent.value;
-        parent.querySelector('.note__content').innerHTML = correctContent.value;
-        noteArray[currentIndex].category = correctCategory.value;      
-        correctItem.remove();
-        correctCategoryNumber();
-        correctVisio = false;
-      }  
-    })
-    
-  }
-}
-
-function archiveNote(event){
-  if (event.target.className === "fa-sharp fa-solid fa-folder"){
-    const parent = event.target.closest('.noteAdded__item');
-    const currentIndex = parent.dataset.index; 
-    parent.remove();      
-    let archiveItem = noteArray[currentIndex];
-    archiveItem.status = 'archive';
-    noteArray.splice(currentIndex, 1); 
-    if (archiveItem.category === "task") {
-      taskArray.push(archiveItem); 
-    }else   if (archiveItem.category === 'idea') {
-      ideaArray.push(archiveItem);
-    } else { 
-      randomArray.push(archiveItem);
-    }
-    correctLiNumber(noteList, noteArray);
-    correctCategoryNumber();
+function createForm (event, placeInsert, category, content) {  
+  if (formVisio == false){
+     content = content ? content : 'content....';
+     category = category ? category : 'category'; 
+    const formText = `
+            <div class="formParent">
+              <div class="create__category">
+                <div class="create__category-list action-item" data-action="initCategory">${category}</div>
+              </div>
+              <textarea class="input__content" name="" id="" cols="50" rows="7">${content}</textarea>
+              <button class="add-button action-item" id="add" data-action="createNote"><i class="fa-solid fa-file-edit"></i></button>
+              <button class="delete-form-button action-item" data-action="deleteForm"><i class="fa-solid fa-trash"></i></button>
+            </div>
+              `
+      if (placeInsert) {
+        placeInsert.insertAdjacentHTML('afterbegin', formText);
+      } else newForm.insertAdjacentHTML('afterbegin', formText);
+      formVisio = true;
   }
 }
 
@@ -172,25 +81,67 @@ function correctLiNumber(list, array) {
   array.forEach((item, ind, arr) => item.index = k++);
 }
 
-function deleteNote(event){
-  //console.log(event.target);
-  if (event.target.className === "fa-solid fa-trash") {    
-    const parent = event.target.closest('.noteAdded__item');
-    const currentIndex = parent.dataset.index; 
-    parent.remove();      
-    noteArray.splice(currentIndex, 1); 
-    correctLiNumber(noteList, noteArray);
-    correctCategoryNumber();
-    //console.log(parent);
-    //console.log(currentIndex);
-    
+class ListNote{
+  constructor(elem, placeForCorrect){
+    this.placeForCorrect = placeForCorrect;
+    this._elem = elem;
+    elem.onclick = this.formAction.bind(this);
+  }
+
+  correctNote(event){
+    if (formVisio == false){
+      const parent = event.target.closest('.noteAdded__item'); 
+      globalNoteParent = parent;       
+      globalNoteIndex = parent.dataset.index;       
+      const currentIndex = parent.dataset.index;
+      const category = noteArray[currentIndex].category;
+      const content = noteArray[currentIndex].content;
+      createForm(event, this.placeForCorrect, category, content );
+    }
+  }  
+  
+  archiveElem(event){
+      const parent = event.target.closest('.noteAdded__item');
+      const currentIndex = parent.dataset.index; 
+      parent.remove();      
+      let archiveItem = noteArray[currentIndex];
+      archiveItem.status = 'archive';
+      noteArray.splice(currentIndex, 1); 
+      if (archiveItem.category === "task") {
+        taskArray.push(archiveItem); 
+      }else   if (archiveItem.category === 'idea') {
+        ideaArray.push(archiveItem);
+      } else { 
+        randomArray.push(archiveItem);
+      }
+      correctLiNumber(noteList, noteArray);
+      correctCategoryNumber();
+  }
+  
+  deleteArchive(event){    
+      const parent = event.target.closest('.noteAdded__item');
+      const currentIndex = parent.dataset.index; 
+      parent.remove();      
+      noteArray.splice(currentIndex, 1); 
+      correctLiNumber(noteList, noteArray);
+      correctCategoryNumber();     
+  }
+
+  formAction(event){
+    let actionItem = event.target.classList.contains('.action-item')
+    ? event.target
+    : event.target.closest('.action-item');
+    let action = actionItem ? actionItem.dataset.action : null;
+    if (action){
+      this[action](event);
+    }
   }
 }
+new ListNote(noteList, newForm);
 
 class Category{
-  constructor(elem, array, divArchive, divActiv,  categoryName, categoryInd) {
-    this.divActiv = divActiv;
-    this.categoryInd = categoryInd;
+  constructor(elem, array, divArchive, divActiv,  categoryName) {
+    this.divActiv = divActiv;    
     this.categoryName = categoryName;
     this.array = array;
     this.divArchive = divArchive;
@@ -213,7 +164,7 @@ class Category{
     correctLiNumber(this.categoryName, this.array); 
   }
 
-  deArchiveElem (event) {
+  archiveElem (event) {
     const parent = event.target.closest('.noteAdded__item');
     const currentIndex = parent.dataset.index; 
     noteArray.push(this.array[currentIndex]);
@@ -222,10 +173,9 @@ class Category{
     deArchiveItem[0].index = noteArray.length - 1;
     firstCreateNote(deArchiveItem ,noteList, 'beforeend');
     categoryList.querySelector(this.divArchive).innerHTML = this.array.length;
-    //const activion = categoryList.querySelector(this.divActiv).value;
-    //categoryList.querySelector(this.divActiv).innerHTML = activion - 1;
+    const activion = categoryList.querySelector(this.divActiv).textContent;
+    categoryList.querySelector(this.divActiv).innerHTML = +activion + 1;
     parent.remove();         
-    correctCategoryNumber();
     correctLiNumber(this.categoryName, this.array);
 }
 
@@ -266,36 +216,31 @@ class Form {
   }    
 
   createNote(event){
-      formVisio = false;
-      const parent = event.target.closest('.formParent');
-      const inputContent = newForm.querySelector('.input__content');    
+      const inputContent = newForm.querySelector('.input__content');      
+      const parent = event.target.closest('.formParent'); 
       const date = new Date();
-      if(inputCategory == undefined){ inputCategory = 'random thougth'}
-      const note = {
-        time: date.toLocaleDateString(),
-        category: inputCategory,
-        content: inputContent.value,
-        status: 'active',
-        index: 0
-      }
-      noteArray.push(note);
-      noteArray[noteArray.length-1].index = noteArray.length - 1;
-      inputCategory = undefined;
-      const textNote = `
-        <li class="noteAdded__item"  data-index=${noteArray.length - 1}>        
-            <p class="note__number">${noteArray.length}</p>  
-            <p class="time">${note.time}</p>
-            <p class="note__content">${note.content}</p> 
-            <p class="note__category">${note.category}</p>           
-            <p class="others"> others</p> 
-            <button class="delete-note-button"><i class="fa-solid fa-trash"></i></button>
-            <button class="edit-note-button"><i class="fa-solid fa-pen"></i></button>
-            <button class="archive-note-button"><i class="fa-sharp fa-solid fa-folder"></i></button>   
-        </li>
-      `
-      noteList.insertAdjacentHTML('beforeend', textNote);
-      parent.remove(); 
+      formVisio = false;
+      if(globalNoteIndex < noteArray.length) {
+        globalNoteParent.querySelector('.note__content').innerHTML = inputContent.value;
+        globalNoteParent.querySelector('.note__category').innerHTML = inputCategory;
+        globalNoteParent.querySelector('.others').innerHTML = date.toLocaleDateString();
+      } else {                  
+            if(inputCategory == undefined){ inputCategory = 'random thougth'}
+            const note = {
+              time: date.toLocaleDateString(),
+              category: inputCategory,
+              content: inputContent.value,
+              status: 'active',
+              index: 0
+            }
+            noteArray.push(note);
+            noteArray[noteArray.length-1].index = noteArray.length - 1;
+            inputCategory = undefined;
+            firstCreateNote (noteArray.splice( noteArray.length - 1,1), noteList, 'beforeend')
+          }
+      parent.remove();               
       correctCategoryNumber();
+      correctLiNumber(noteList, noteArray);
       //console.log(noteArray);   
      
   }
@@ -338,19 +283,4 @@ class Form {
 }
 new Form(newForm);
 
-function createForm (event) {  
-  if (formVisio == false){
-      const formText = `
-            <div class="formParent">
-              <div class="create__category">
-                <div class="create__category-list action-item" data-action="initCategory">category</div>
-              </div>
-              <textarea class="input__content" name="" id="" cols="50" rows="7"></textarea>
-              <button class="add-button action-item" id="add" data-action="createNote"><i class="fa-solid fa-file-edit"></i></button>
-              <button class="delete-form-button action-item" data-action="deleteForm"><i class="fa-solid fa-trash"></i></button>
-            </div>
-              `
-      newForm.insertAdjacentHTML('afterbegin', formText);
-      formVisio = true;
-  }
-}
+
